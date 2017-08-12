@@ -11,6 +11,7 @@ RUN mkdir -p /deploy/app
 COPY gunicorn_config.py /deploy/gunicorn_config.py
 COPY requirements.txt /deploy/requirements.txt
 COPY service_account.json /deploy/service_account.json
+COPY slack_rtm.conf /etc/init/slack_rtm.conf
 COPY app /deploy/app
 
 RUN pip3 install -r /deploy/requirements.txt
@@ -18,4 +19,5 @@ RUN pip3 install -r /deploy/requirements.txt
 WORKDIR /deploy/app
 EXPOSE 8000
 ENV GOOGLE_APPLICATION_CREDENTIALS=/deploy/service_account.json
-CMD ["/usr/bin/gunicorn", "--config", "/deploy/gunicorn_config.py", "app:app"]
+CMD ["/usr/local/bin/gunicorn", "--config", "/deploy/gunicorn_config.py", "app:app"]
+CMD ["start", "slack_rtm"]

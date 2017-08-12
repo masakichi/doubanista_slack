@@ -100,3 +100,4 @@ ENV/
 
 # config file
 config.py
+service_account.json

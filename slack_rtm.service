@@ -1,9 +1,0 @@
-[Unit]
-Description=slack_rtm
-
-[Service]
-ExecStart=/usr/bin/python3 /deploy/app/rtm.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target

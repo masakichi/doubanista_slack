@@ -16,9 +16,11 @@ if sc.rtm_connect():
         print(rv)
         for event in rv:
             if event.get('type') == 'message' and event['channel'] == ORIGIN_CHANNEL_ID:
-                text = event['text']
+                text = event.get('text')
+                if not text:
+                    continue
                 print(text)
-                sc.rtm_send_message(TARGET_CHANNEL_NAME, translate(text))
+                sc.rtm_send_message(ORIGIN_CHANNEL_ID, translate(text), event['ts'])
         time.sleep(1)
 else:
     print("Connection Failed, invalid token?")

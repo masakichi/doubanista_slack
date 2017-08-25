@@ -10,6 +10,12 @@ from translate import translate
 slack_token = SLACK_BOT_API_TOKEN
 sc = SlackClient(slack_token)
 
+def need_translate(text):
+    text = text.strip()
+    if text.startswith(':') and text.endswith(':'):
+        return False
+    return True
+
 if sc.rtm_connect():
     while True:
         rv = sc.rtm_read()
@@ -18,6 +24,8 @@ if sc.rtm_connect():
             if event.get('type') == 'message' and event['channel'] == ORIGIN_CHANNEL_ID:
                 text = event.get('text')
                 if not text:
+                    continue
+                if not need_translate(text):
                     continue
                 print(text)
                 sc.rtm_send_message(ORIGIN_CHANNEL_ID, translate(text), event['ts'])

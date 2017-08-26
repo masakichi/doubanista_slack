@@ -10,25 +10,85 @@ from translate import translate
 slack_token = SLACK_BOT_API_TOKEN
 sc = SlackClient(slack_token)
 
+
+FLAG_LANG_MAP = {
+    'cn': 'zh-CN',
+    'tw': 'zh-TW',
+    'jp': 'ja',
+    'us': 'en',
+    'gb': 'en',
+    'fr': 'fr',
+    'de': 'de',
+    'es': 'es',
+}
+
+TRANSLATED_POOL = set()
+
+def has_translated(channel, ts, lang):
+    key = '{}/{}/{}'.format(channel, ts, lang)
+    if key in TRANSLATED_POOL:
+        return True
+    return False
+
 def need_translate(text):
     text = text.strip()
     if text.startswith(':') and text.endswith(':'):
         return False
     return True
 
+
+def retrieve_msg_by_ts(channel, ts):
+    rv = sc.api_call(
+        'channels.history',
+        channel=channel,
+        latest=ts,
+        inclusive=True,
+        count=1,
+    )
+    if rv.get('ok'):
+        msgs = rv.get('messages')
+        if msgs:
+            return msgs[0]
+
+
+def handle_flag_reaction(event):
+    e_type = event.get('type')
+    if e_type and e_type == 'reaction_added':
+        reaction = event.get('reaction')
+        if not reaction.startswith('flag-'):
+            return
+        item = event.get('item')
+        if not item or item.get('type') != 'message':
+            return
+        flag = reaction[5:]
+        target_lang = FLAG_LANG_MAP.get(flag, 'en')
+        channel = item.get('channel')
+        ts = item.get('ts')
+        if has_translated(channel, ts, target_lang):
+            return
+        # TODO(Gimo): can be stored locally maybe.
+        msg = retrieve_msg_by_ts(channel, ts)
+        print(msg)
+        if msg:
+            text = msg.get('text', '')
+            if text and need_translate(text):
+                resp_text = translate(text, target_lang)
+                sc.api_call(
+                    'chat.postMessage',
+                    channel=channel,
+                    text=resp_text,
+                    icon_emoji=':{}:'.format(reaction),
+                    thread_ts=ts,
+                    username='polyglot'
+                )
+                TRANSLATED_POOL.add('{}/{}/{}'.format(channel, ts, target_lang))
+
 if sc.rtm_connect():
     while True:
         rv = sc.rtm_read()
-        print(rv)
         for event in rv:
-            if event.get('type') == 'message' and event['channel'] == ORIGIN_CHANNEL_ID:
-                text = event.get('text')
-                if not text:
-                    continue
-                if not need_translate(text):
-                    continue
-                print(text)
-                sc.rtm_send_message(ORIGIN_CHANNEL_ID, translate(text), event['ts'])
+            print(event)
+            handle_flag_reaction(event)
         time.sleep(1)
 else:
     print("Connection Failed, invalid token?")

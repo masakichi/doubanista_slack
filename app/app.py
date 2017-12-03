@@ -23,11 +23,9 @@ def translate():
 def translate_dialog():
     if not validate_request(request):
         abort(403)
-    print(request.form)
     trigger_id = request.form.get('trigger_id')
     user_id = request.form.get('user_id')
     open_dialog = sc.api_call('dialog.open', trigger_id=trigger_id, dialog=build_dialog(user_id))
-    print(open_dialog)
     return ''
 
 def validate_request(request):
@@ -45,7 +43,7 @@ def wrap_resp(text):
     return jsonify(d)
 
 def build_dialog(user_id):
-    dialog={
+    return {
         'title': '翻訳',
         'submit_label': '確認する',
         'callback_id': user_id + 'translation_form',

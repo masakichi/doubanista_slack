@@ -99,5 +99,6 @@ ENV/
 .mypy_cache/
 
 # config file
+.vscode/
 config.py
 service_account.json

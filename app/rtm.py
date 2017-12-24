@@ -72,7 +72,8 @@ def handle_flag_reaction(event):
         if msg:
             text = msg.get('text', '')
             if text and need_translate(text):
-                resp_text = translate(text, target_lang)
+                source = 'youdao' if target_lang in ('ja', 'zh-CN') else 'google'
+                resp_text = translate(text, target_lang, source)
                 sc.api_call(
                     'chat.postMessage',
                     channel=channel,

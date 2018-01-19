@@ -35,8 +35,7 @@ def get_latest_items(last_time):
     last_time = last_time
     feed = feedparser.parse(FEED_URL)
     if last_time > conv_struct_time(feed.updated_parsed):
-        print('no new irasuto.')
-        return
+        return []
     entries = [e for e in feed.entries if conv_struct_time(e.updated_parsed) > last_time]
     return [{'title': e.title, 'image': get_image_url(e), 'url': e.link} for e in entries if len(e.media_thumbnail)]
 

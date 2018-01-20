@@ -6,6 +6,7 @@ from slackclient import SlackClient
 from config import SLACK_TOKEN, TEAM_ID, APP_TRANSLATOR_API_TOKEN
 
 from translate import translate as t
+from irasutoya import get_random_irasutoya_attachments
 
 sc = SlackClient(APP_TRANSLATOR_API_TOKEN)
 
@@ -27,6 +28,16 @@ def translate_dialog():
     user_id = request.form.get('user_id')
     open_dialog = sc.api_call('dialog.open', trigger_id=trigger_id, dialog=build_dialog(user_id))
     return ''
+
+@app.route('/irasutoya/random', methods=['POST'])
+def irasutoya_random():
+    if not validate_request(request):
+        abort(403)
+    resp = {
+        'response_type': 'in_channel',
+        'attachments': get_random_irasutoya_attachments()
+    }
+    return jsonify(resp)
 
 def validate_request(request):
     token = request.form.get('token')

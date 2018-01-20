@@ -35,7 +35,9 @@ def irasutoya_random():
         abort(403)
     resp = {
         'response_type': 'in_channel',
-        'attachments': get_random_irasutoya_attachments()
+        'attachments': get_random_irasutoya_attachments(),
+        'icon_emoji': ':irasutoya:',
+        'username': 'いらすとや'
     }
     return jsonify(resp)
 

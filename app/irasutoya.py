@@ -37,23 +37,32 @@ def get_latest_items(last_time):
     if last_time > conv_struct_time(feed.updated_parsed):
         return []
     entries = [e for e in feed.entries if conv_struct_time(e.updated_parsed) > last_time]
-    return [{'title': e.title, 'image': get_image_url(e), 'url': e.link} for e in entries if len(e.media_thumbnail)]
+    return [{'title': e.title, 'image': get_image_url(e), 'url': e.link, 'summary': e.summary} for e in entries if len(e.media_thumbnail)]
+
+def build_attachments(data):
+    return [
+        {
+            'title': data['title'],
+            'title_link': data['url'],
+            'text': data['summary'],
+            'image_url': data['image'],
+            'color': '#764FA5'
+        }
+    ]
 
 def cronjob():
     last_time = get_last_time()
     set_last_time()
     items = get_latest_items(last_time)
     for item in items:
-        text = '\n'.join([item['title'], item['image'], item['url']])
         sc.api_call(
             'chat.postMessage',
             channel='いらすとや',
-            text=text,
+            attachments=build_attachments(item),
             icon_emoji=':irasutoya:',
             username='いらすとや'
         )
         time.sleep(1)
-
 
 if __name__ == '__main__':
     cronjob()

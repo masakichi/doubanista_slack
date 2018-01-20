@@ -3,12 +3,12 @@
 from flask import Flask, request, abort, jsonify, make_response
 from slackclient import SlackClient
 
-from config import SLACK_TOKEN, TEAM_ID, APP_TRANSLATOR_API_TOKEN
+from config import SLACK_TOKEN, TEAM_ID, SLACK_BOT_API_TOKEN
 
 from translate import translate as t
 from irasutoya import get_random_irasutoya_attachments
 
-sc = SlackClient(APP_TRANSLATOR_API_TOKEN)
+sc = SlackClient(SLACK_BOT_API_TOKEN)
 
 app = Flask(__name__)
 

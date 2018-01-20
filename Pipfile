@@ -33,6 +33,7 @@ tenacity = "==4.4.0"
 websocket-client = "==0.44.0"
 werkzeug = "==0.12.2"
 feedparser = "*"
+diskcache = "*"
 
 
 [dev-packages]

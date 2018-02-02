@@ -56,7 +56,7 @@ def handle_flag_reaction(event):
     if e_type and e_type == 'reaction_added':
         reaction = event.get('reaction')
         #XXX(Gimo): Slack が勝手に国旗コードをチャージられる。
-        if not reaction.startswith('flag-') or reaction not in FLAG_LANG_MAP.keys():
+        if not reaction.startswith('flag-') and reaction not in FLAG_LANG_MAP.keys():
             return
         item = event.get('item')
         if not item or item.get('type') != 'message':
